@@ -1,5 +1,7 @@
 package io.samanthatobias.bookcatalogue.model;
 
+import javax.validation.constraints.NotNull;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,9 +12,10 @@ import lombok.Setter;
 public class Book {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@NotNull
 	private String title;
 
 	private String isbn;

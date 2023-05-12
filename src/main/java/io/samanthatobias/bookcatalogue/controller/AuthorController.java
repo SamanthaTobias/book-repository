@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AuthorController {
 
 	@Autowired
-	AuthorService authorService;
+	private AuthorService authorService;
 
 	@GetMapping
 	public String viewAuthorPage(Model model) {
-		model.addAttribute("listAuthors", authorService.getAllAuthors());
+		model.addAttribute("authors", authorService.getAllAuthors());
 		return "authors";
 	}
 

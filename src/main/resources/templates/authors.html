@@ -13,12 +13,14 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="author : ${listAuthors}">
+    <tr th:each="author : ${authors}">
         <td th:text="${author.name}"></td>
         <td th:text="${author.books.size()}"></td>
     </tr>
     </tbody>
 </table>
 <a th:href="@{/authors/showNewAuthorForm}">Add New Author</a>
+<br/>
+<a th:href="@{/}">Back</a>
 </body>
 </html>
