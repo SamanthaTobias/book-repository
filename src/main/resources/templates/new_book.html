@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
     <title>Add New Book</title>
 </head>
 <body>
@@ -30,6 +31,8 @@
             <td colspan="2"><input type="submit" value="Save"/></td>
         </tr>
     </table>
+    <br/>
+    <a th:href="@{/authors}">Back</a>
 </form>
 </body>
 </html>
