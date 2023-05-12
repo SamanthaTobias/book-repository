@@ -1,6 +1,6 @@
 package io.samanthatobias.bookcatalogue.model;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,7 +15,7 @@ public class Book {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotNull
+	@NotBlank(message = "Title is mandatory")
 	private String title;
 
 	private String isbn;

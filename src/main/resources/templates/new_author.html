@@ -10,7 +10,10 @@
     <table>
         <tr>
             <td>Name:</td>
-            <td><input th:field="*{name}" type="text"/></td>
+            <td>
+                <input required="required" th:field="*{name}" type="text"/>
+                <span class="error" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></span>
+            </td>
         </tr>
         <tr>
             <td colspan="2"><input type="submit" value="Save"/></td>

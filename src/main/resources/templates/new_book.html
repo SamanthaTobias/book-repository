@@ -14,7 +14,10 @@
         </tr>
         <tr>
             <td>ISBN:</td>
-            <td><input th:field="*{isbn}" type="text"/></td>
+            <td>
+                <input th:field="*{isbn}" type="text"/>
+                <span class="error" th:errors="*{title}" th:if="${#fields.hasErrors('title')}"></span>
+            </td>
         </tr>
         <tr>
             <td>Author:</td>
