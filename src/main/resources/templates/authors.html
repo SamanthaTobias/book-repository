@@ -9,6 +9,7 @@
 <ul th:if="${errors != null}">
     <li class="error-message" th:each="error : ${errors}" th:text="${error}"></li>
 </ul>
+<a th:href="@{/authors/showNewAuthorForm}">Add New Author</a>
 <table>
     <thead>
     <tr>
@@ -28,8 +29,6 @@
     </tr>
     </tbody>
 </table>
-<a th:href="@{/authors/showNewAuthorForm}">Add New Author</a>
-<br/>
 <a th:href="@{/}">Back</a>
 </body>
 </html>
