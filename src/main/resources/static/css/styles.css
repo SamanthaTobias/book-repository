@@ -93,11 +93,9 @@ form {
     width: 50%;
 }
 
-.error {
-    color: red;
-}
-
 .error-message {
+    list-style-type: none;
+    padding: 0;
     color: #b71c1c;
     background-color: #ffcdd2;
     border: 1px solid #b71c1c;

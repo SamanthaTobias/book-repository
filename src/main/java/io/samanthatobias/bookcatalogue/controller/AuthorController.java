@@ -1,6 +1,8 @@
 package io.samanthatobias.bookcatalogue.controller;
 
-import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.ValidationException;
 
 import io.samanthatobias.bookcatalogue.model.Author;
@@ -8,7 +10,6 @@ import io.samanthatobias.bookcatalogue.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -33,9 +34,11 @@ public class AuthorController {
 	}
 
 	@PostMapping("/saveAuthor")
-	public String saveAuthor(@Valid @ModelAttribute("author") Author author, BindingResult bindingResult, Model model) {
-		if (bindingResult.hasErrors()) {
-			return "add_author";
+	public String saveAuthor(@ModelAttribute("author") Author author, Model model) {
+		List<String> errors = validateAuthor(author);
+		if (!errors.isEmpty()) {
+			model.addAttribute("errors", errors);
+			return "new_author";
 		}
 		authorService.save(author);
 		return "redirect:/authors";
@@ -46,7 +49,7 @@ public class AuthorController {
 		try {
 			authorService.delete(id);
 		} catch (ValidationException e) {
-			ra.addFlashAttribute("error", e.getMessage());
+			ra.addFlashAttribute("errors", List.of(e.getMessage()));
 		}
 		return "redirect:/authors";
 	}
@@ -59,12 +62,22 @@ public class AuthorController {
 	}
 
 	@PostMapping("/updateAuthor")
-	public String updateAuthor(@Valid @ModelAttribute("author") Author author, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
+	public String updateAuthor(@ModelAttribute("author") Author author, Model model) {
+		List<String> errors = validateAuthor(author);
+		if (!errors.isEmpty()) {
+			model.addAttribute("errors", errors);
 			return "edit_author";
 		}
 		authorService.save(author);
 		return "redirect:/authors";
+	}
+
+	private List<String> validateAuthor(Author author) {
+		List<String> errors = new ArrayList<>();
+		if (author.getName() == null || author.getName().trim().isEmpty()) {
+			errors.add("Author name is required.");
+		}
+		return errors;
 	}
 
 }

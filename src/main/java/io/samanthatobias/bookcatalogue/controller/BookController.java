@@ -1,8 +1,7 @@
 package io.samanthatobias.bookcatalogue.controller;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import javax.validation.Valid;
 
 import io.samanthatobias.bookcatalogue.model.Author;
 import io.samanthatobias.bookcatalogue.model.Book;
@@ -11,7 +10,6 @@ import io.samanthatobias.bookcatalogue.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -39,8 +37,10 @@ public class BookController {
 	}
 
 	@PostMapping("/saveBook")
-	public String saveBook(@Valid @ModelAttribute("book") Book book, BindingResult bindingResult, Model model) {
-		if (bindingResult.hasErrors()) {
+	public String saveBook(@ModelAttribute("book") Book book, Model model) {
+		List<String> errors = validateBook(book);
+		if (!errors.isEmpty()) {
+			model.addAttribute("errors", errors);
 			model.addAttribute("authors", authorService.getAll());
 			return "new_book";
 		}
@@ -64,13 +64,26 @@ public class BookController {
 	}
 
 	@PostMapping("/updateBook")
-	public String updateBook(@Valid @ModelAttribute("book") Book book, BindingResult bindingResult, Model model) {
-		if (bindingResult.hasErrors()) {
+	public String updateBook(@ModelAttribute("book") Book book, Model model) {
+		List<String> errors = validateBook(book);
+		if (!errors.isEmpty()) {
+			model.addAttribute("errors", errors);
 			model.addAttribute("authors", authorService.getAll());
 			return "edit_book";
 		}
 		bookService.save(book);
 		return "redirect:/books";
+	}
+
+	private List<String> validateBook(Book book) {
+		List<String> errors = new ArrayList<>();
+		if (book.getTitle() == null || book.getTitle().isEmpty()) {
+			errors.add("Title is required");
+		}
+		if (book.getAuthor() == null || book.getAuthor().getId() == null) {
+			errors.add("Author is required");
+		}
+		return errors;
 	}
 
 }

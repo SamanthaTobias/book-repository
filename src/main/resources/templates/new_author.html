@@ -6,13 +6,15 @@
 </head>
 <body>
 <h1>Add New Author</h1>
+<ul th:if="${errors != null}">
+    <li class="error-message" th:each="error : ${errors}" th:text="${error}"></li>
+</ul>
 <form action="#" method="post" th:action="@{/authors/saveAuthor}" th:object="${author}">
     <table>
         <tr>
             <td>Name:</td>
             <td>
                 <input required="required" th:field="*{name}" type="text"/>
-                <span class="error" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></span>
             </td>
         </tr>
         <tr>

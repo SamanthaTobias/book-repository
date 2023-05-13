@@ -6,6 +6,9 @@
 </head>
 <body>
 <h1>Edit Book</h1>
+<ul th:if="${errors != null}">
+    <li class="error-message" th:each="error : ${errors}" th:text="${error}"></li>
+</ul>
 <form action="#" method="post" th:action="@{/books/updateBook}" th:object="${book}">
     <input th:field="*{id}" type="hidden"/>
     <table>
@@ -13,7 +16,6 @@
             <td>Title:</td>
             <td>
                 <input required="required" th:field="*{title}" type="text"/>
-                <span th:errors="*{title}" th:if="${#fields.hasErrors('title')}"></span>
             </td>
         </tr>
         <tr>
@@ -29,7 +31,6 @@
                     <option value="">Choose an author...</option>
                     <option th:each="author : ${authors}" th:text="${author.name}" th:value="${author.id}"></option>
                 </select>
-                <span th:errors="*{author.id}" th:if="${#fields.hasErrors('author.id')}"></span>
             </td>
         </tr>
         <tr>

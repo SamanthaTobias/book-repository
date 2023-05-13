@@ -6,6 +6,9 @@
 </head>
 <body>
 <h1>Edit Author</h1>
+<ul th:if="${errors != null}">
+    <li class="error-message" th:each="error : ${errors}" th:text="${error}"></li>
+</ul>
 <form action="#" method="post" th:action="@{/authors/updateAuthor}" th:object="${author}">
     <input th:field="*{id}" type="hidden"/>
     <table>
@@ -13,7 +16,6 @@
             <td>Name:</td>
             <td>
                 <input required="required" th:field="*{name}" type="text"/>
-                <span th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></span>
             </td>
         </tr>
         <tr>
