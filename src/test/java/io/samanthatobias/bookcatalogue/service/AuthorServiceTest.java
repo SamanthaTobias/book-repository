@@ -36,14 +36,14 @@ class AuthorServiceTest {
 	@Test
 	public void getAllAuthorsTest() {
 		when(authorRepository.findAll()).thenReturn(new ArrayList<>());
-		assertThat(authorService.getAllAuthors()).isEmpty();
+		assertThat(authorService.getAll()).isEmpty();
 		verify(authorRepository, times(1)).findAll();
 	}
 
 	@Test
 	public void saveAuthorTest() {
 		Author author = new Author();
-		authorService.saveAuthor(author);
+		authorService.save(author);
 		verify(authorRepository, times(1)).save(author);
 	}
 
@@ -52,7 +52,7 @@ class AuthorServiceTest {
 		Author author = mock(Author.class);
 		when(author.getBooks()).thenReturn(new ArrayList<>());
 		when(authorRepository.findById(anyLong())).thenReturn(Optional.of(author));
-		authorService.deleteAuthor(1L);
+		authorService.delete(1L);
 		verify(authorRepository, times(1)).deleteById(anyLong());
 	}
 
@@ -61,7 +61,7 @@ class AuthorServiceTest {
 		Author author = mock(Author.class);
 		when(author.getBooks()).thenReturn(Collections.singletonList(new Book()));
 		when(authorRepository.findById(anyLong())).thenReturn(Optional.of(author));
-		assertThatThrownBy(() -> authorService.deleteAuthor(1L))
+		assertThatThrownBy(() -> authorService.delete(1L))
 				.isInstanceOf(ValidationException.class)
 				.hasMessage("Cannot delete author with existing books.");
 	}
@@ -69,7 +69,7 @@ class AuthorServiceTest {
 	@Test
 	public void deleteAuthorNotFoundTest() {
 		when(authorRepository.findById(anyLong())).thenReturn(Optional.empty());
-		assertThatThrownBy(() -> authorService.deleteAuthor(1L))
+		assertThatThrownBy(() -> authorService.delete(1L))
 				.isInstanceOf(ResourceNotFoundException.class)
 				.hasMessage("Resource (1) not found");
 	}

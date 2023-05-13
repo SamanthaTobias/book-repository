@@ -21,6 +21,7 @@
         <td th:text="${author.books.size()}"></td>
         <td>
             <a th:href="@{'/authors/delete/' + ${author.id}}">Delete</a>
+            <a th:href="@{'/authors/edit/' + ${author.id}}">Edit</a>
         </td>
     </tr>
     </tbody>

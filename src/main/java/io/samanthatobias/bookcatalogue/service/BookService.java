@@ -15,15 +15,24 @@ public class BookService {
 	@Autowired
 	private BookRepository bookRepository;
 
-	public List<Book> getAllBooks() {
+	public List<Book> getAll() {
 		return bookRepository.findAll();
 	}
 
-	public void saveBook(Book book) {
+	public Book getById(Long id) {
+		Optional<Book> book = bookRepository.findById(id);
+		if (book.isEmpty()) {
+			throw new ResourceNotFoundException(id);
+		} else {
+			return book.get();
+		}
+	}
+
+	public void save(Book book) {
 		bookRepository.save(book);
 	}
 
-	public void deleteBook(Long id) {
+	public void delete(Long id) {
 		Optional<Book> book = bookRepository.findById(id);
 		if (book.isPresent()) {
 			bookRepository.deleteById(id);

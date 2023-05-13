@@ -21,7 +21,7 @@ public class AuthorController {
 
 	@GetMapping
 	public String viewAuthorPage(Model model) {
-		model.addAttribute("authors", authorService.getAllAuthors());
+		model.addAttribute("authors", authorService.getAll());
 		return "authors";
 	}
 
@@ -37,17 +37,33 @@ public class AuthorController {
 		if (bindingResult.hasErrors()) {
 			return "add_author";
 		}
-		authorService.saveAuthor(author);
+		authorService.save(author);
 		return "redirect:/authors";
 	}
 
 	@GetMapping("/delete/{id}")
 	public String deleteAuthor(@PathVariable("id") Long id, RedirectAttributes ra) {
 		try {
-			authorService.deleteAuthor(id);
+			authorService.delete(id);
 		} catch (ValidationException e) {
 			ra.addFlashAttribute("error", e.getMessage());
 		}
+		return "redirect:/authors";
+	}
+
+	@GetMapping("/edit/{id}")
+	public String showEditForm(@PathVariable("id") Long id, Model model) {
+		Author author = authorService.getById(id);
+		model.addAttribute("author", author);
+		return "edit_author";
+	}
+
+	@PostMapping("/updateAuthor")
+	public String updateAuthor(@Valid @ModelAttribute("author") Author author, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return "edit_author";
+		}
+		authorService.save(author);
 		return "redirect:/authors";
 	}
 

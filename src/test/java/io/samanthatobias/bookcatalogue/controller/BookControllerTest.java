@@ -43,11 +43,11 @@ class BookControllerTest {
 	@Test
 	public void testViewHomePage() {
 		List<Book> books = Arrays.asList(new Book(), new Book());
-		when(bookService.getAllBooks()).thenReturn(books);
+		when(bookService.getAll()).thenReturn(books);
 
 		String viewName = bookController.viewHomePage(model);
 
-		verify(bookService, times(1)).getAllBooks();
+		verify(bookService, times(1)).getAll();
 		verify(model, times(1)).addAttribute("books", books);
 		assertThat(viewName).isEqualTo("books");
 	}
@@ -55,11 +55,11 @@ class BookControllerTest {
 	@Test
 	public void testShowNewBookForm() {
 		List<Author> authors = Arrays.asList(new Author(), new Author());
-		when(authorService.getAllAuthors()).thenReturn(authors);
+		when(authorService.getAll()).thenReturn(authors);
 
 		String viewName = bookController.showNewBookForm(model);
 
-		verify(authorService, times(1)).getAllAuthors();
+		verify(authorService, times(1)).getAll();
 		verify(model, times(1)).addAttribute(eq("authors"), any());
 		verify(model, times(1)).addAttribute(eq("book"), any());
 		assertThat(viewName).isEqualTo("new_book");
@@ -70,11 +70,11 @@ class BookControllerTest {
 		Book book = new Book();
 		when(bindingResult.hasErrors()).thenReturn(true);
 		List<Author> authors = Arrays.asList(new Author(), new Author());
-		when(authorService.getAllAuthors()).thenReturn(authors);
+		when(authorService.getAll()).thenReturn(authors);
 
 		String viewName = bookController.saveBook(book, bindingResult, model);
 
-		verify(bookService, never()).saveBook(any(Book.class));
+		verify(bookService, never()).save(any(Book.class));
 		verify(model, times(1)).addAttribute("authors", authors);
 		assertThat(viewName).isEqualTo("new_book");
 	}
@@ -86,7 +86,7 @@ class BookControllerTest {
 
 		String viewName = bookController.saveBook(book, bindingResult, model);
 
-		verify(bookService, times(1)).saveBook(any(Book.class));
+		verify(bookService, times(1)).save(any(Book.class));
 		assertThat(viewName).isEqualTo("redirect:/books");
 	}
 
@@ -96,7 +96,7 @@ class BookControllerTest {
 
 		String viewName = bookController.deleteBook(id, model);
 
-		verify(bookService, times(1)).deleteBook(id);
+		verify(bookService, times(1)).delete(id);
 		assertThat(viewName).isEqualTo("redirect:/books");
 	}
 

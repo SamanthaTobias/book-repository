@@ -1,7 +1,10 @@
 package io.samanthatobias.bookcatalogue.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
+import io.samanthatobias.bookcatalogue.model.Author;
 import io.samanthatobias.bookcatalogue.model.Book;
 import io.samanthatobias.bookcatalogue.service.AuthorService;
 import io.samanthatobias.bookcatalogue.service.BookService;
@@ -23,7 +26,7 @@ public class BookController {
 
 	@GetMapping
 	public String viewHomePage(Model model) {
-		model.addAttribute("books", bookService.getAllBooks());
+		model.addAttribute("books", bookService.getAll());
 		return "books";
 	}
 
@@ -31,23 +34,42 @@ public class BookController {
 	public String showNewBookForm(Model model) {
 		Book book = new Book();
 		model.addAttribute("book", book);
-		model.addAttribute("authors", authorService.getAllAuthors());
+		model.addAttribute("authors", authorService.getAll());
 		return "new_book";
 	}
 
 	@PostMapping("/saveBook")
 	public String saveBook(@Valid @ModelAttribute("book") Book book, BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {
-			model.addAttribute("authors", authorService.getAllAuthors());
+			model.addAttribute("authors", authorService.getAll());
 			return "new_book";
 		}
-		bookService.saveBook(book);
+		bookService.save(book);
 		return "redirect:/books";
 	}
 
 	@GetMapping("/delete/{id}")
 	public String deleteBook(@PathVariable("id") Long id, Model model) {
-		bookService.deleteBook(id);
+		bookService.delete(id);
+		return "redirect:/books";
+	}
+
+	@GetMapping("/edit/{id}")
+	public String showEditForm(@PathVariable("id") Long id, Model model) {
+		Book book = bookService.getById(id);
+		List<Author> authors = authorService.getAll();
+		model.addAttribute("book", book);
+		model.addAttribute("authors", authors);
+		return "edit_book";
+	}
+
+	@PostMapping("/updateBook")
+	public String updateBook(@Valid @ModelAttribute("book") Book book, BindingResult bindingResult, Model model) {
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("authors", authorService.getAll());
+			return "edit_book";
+		}
+		bookService.save(book);
 		return "redirect:/books";
 	}
 

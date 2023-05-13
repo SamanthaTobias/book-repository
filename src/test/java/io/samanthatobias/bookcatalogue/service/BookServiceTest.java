@@ -32,28 +32,28 @@ class BookServiceTest {
 	@Test
 	public void getAllBooksTest() {
 		when(bookRepository.findAll()).thenReturn(new ArrayList<>());
-		assertThat(bookService.getAllBooks()).isEmpty();
+		assertThat(bookService.getAll()).isEmpty();
 		verify(bookRepository, times(1)).findAll();
 	}
 
 	@Test
 	public void saveBookTest() {
 		Book book = new Book();
-		bookService.saveBook(book);
+		bookService.save(book);
 		verify(bookRepository, times(1)).save(book);
 	}
 
 	@Test
 	public void deleteBookFoundTest() {
 		when(bookRepository.findById(anyLong())).thenReturn(Optional.of(new Book()));
-		bookService.deleteBook(1L);
+		bookService.delete(1L);
 		verify(bookRepository, times(1)).deleteById(1L);
 	}
 
 	@Test
 	public void deleteBookNotFoundTest() {
 		when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
-		assertThatThrownBy(() -> bookService.deleteBook(1L))
+		assertThatThrownBy(() -> bookService.delete(1L))
 				.isInstanceOf(ResourceNotFoundException.class)
 				.hasMessage("Resource (1) not found");
 	}

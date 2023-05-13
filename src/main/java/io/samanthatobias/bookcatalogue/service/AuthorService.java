@@ -17,15 +17,24 @@ public class AuthorService {
 	@Autowired
 	private AuthorRepository authorRepository;
 
-	public List<Author> getAllAuthors() {
+	public List<Author> getAll() {
 		return authorRepository.findAll();
 	}
 
-	public void saveAuthor(Author author) {
+	public Author getById(Long id) {
+		Optional<Author> author = authorRepository.findById(id);
+		if (author.isEmpty()) {
+			throw new ResourceNotFoundException(id);
+		} else {
+			return author.get();
+		}
+	}
+
+	public void save(Author author) {
 		authorRepository.save(author);
 	}
 
-	public void deleteAuthor(Long id) {
+	public void delete(Long id) {
 		Optional<Author> author = authorRepository.findById(id);
 		if (author.isPresent()) {
 			if (author.get().getBooks().isEmpty()) {

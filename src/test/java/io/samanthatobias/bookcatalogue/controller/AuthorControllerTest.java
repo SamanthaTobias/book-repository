@@ -44,7 +44,7 @@ class AuthorControllerTest {
 		when(bindingResult.hasErrors()).thenReturn(true);
 
 		String viewName = authorController.saveAuthor(author, bindingResult, model);
-		verify(authorService, never()).saveAuthor(any(Author.class));
+		verify(authorService, never()).save(any(Author.class));
 		assertThat(viewName).isEqualTo("add_author");
 	}
 
@@ -54,14 +54,14 @@ class AuthorControllerTest {
 		when(bindingResult.hasErrors()).thenReturn(false);
 
 		String viewName = authorController.saveAuthor(author, bindingResult, model);
-		verify(authorService, times(1)).saveAuthor(any(Author.class));
+		verify(authorService, times(1)).save(any(Author.class));
 		assertThat(viewName).isEqualTo("redirect:/authors");
 	}
 
 	@Test
 	public void testViewAuthorPage() {
 		String viewName = authorController.viewAuthorPage(model);
-		verify(authorService, times(1)).getAllAuthors();
+		verify(authorService, times(1)).getAll();
 		verify(model, times(1)).addAttribute(anyString(), any());
 		assertThat(viewName).isEqualTo("authors");
 	}
@@ -77,16 +77,16 @@ class AuthorControllerTest {
 	public void testDeleteAuthorWithoutErrors() {
 		Long id = 1L;
 		String viewName = authorController.deleteAuthor(id, ra);
-		verify(authorService, times(1)).deleteAuthor(id);
+		verify(authorService, times(1)).delete(id);
 		assertThat(viewName).isEqualTo("redirect:/authors");
 	}
 
 	@Test
 	public void testDeleteAuthorWithValidationError() {
 		Long id = 1L;
-		doThrow(new ValidationException("Error")).when(authorService).deleteAuthor(id);
+		doThrow(new ValidationException("Error")).when(authorService).delete(id);
 		String viewName = authorController.deleteAuthor(id, ra);
-		verify(authorService, times(1)).deleteAuthor(id);
+		verify(authorService, times(1)).delete(id);
 		verify(ra, times(1)).addFlashAttribute(anyString(), any());
 		assertThat(viewName).isEqualTo("redirect:/authors");
 	}
