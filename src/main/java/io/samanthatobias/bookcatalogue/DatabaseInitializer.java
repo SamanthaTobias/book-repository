@@ -64,6 +64,12 @@ public class DatabaseInitializer {
 			headFirstJava.setAuthor(sierra);
 			bookRepository.save(headFirstJava);
 
+			Book headFirstJava2ndEdition = new Book();
+			headFirstJava2ndEdition.setTitle("Head First Java 2nd Edition");
+			headFirstJava2ndEdition.setIsbn("978-0596009205");
+			headFirstJava2ndEdition.setAuthor(sierra);
+			bookRepository.save(headFirstJava2ndEdition);
+
 			Book headFirstDesignPatterns = new Book();
 			headFirstDesignPatterns.setTitle("Head First Design Patterns");
 			headFirstDesignPatterns.setIsbn("978-0596007126");
