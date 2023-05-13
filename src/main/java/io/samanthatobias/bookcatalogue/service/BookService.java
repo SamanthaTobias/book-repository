@@ -1,6 +1,7 @@
 package io.samanthatobias.bookcatalogue.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import io.samanthatobias.bookcatalogue.model.Book;
 import io.samanthatobias.bookcatalogue.repository.BookRepository;
@@ -19,6 +20,15 @@ public class BookService {
 
 	public void saveBook(Book book) {
 		bookRepository.save(book);
+	}
+
+	public void deleteBook(Long id) throws Exception {
+		Optional<Book> book = bookRepository.findById(id);
+		if (book.isPresent()) {
+			bookRepository.deleteById(id);
+		} else {
+			throw new Exception("Book not found.");
+		}
 	}
 
 }

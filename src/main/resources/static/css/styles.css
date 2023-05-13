@@ -96,3 +96,14 @@ form {
 .error {
     color: red;
 }
+
+.error-message {
+    color: #b71c1c;
+    background-color: #ffcdd2;
+    border: 1px solid #b71c1c;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 20px auto;
+    width: 50%;
+    text-align: center;
+}
