@@ -1,94 +1,146 @@
 package io.samanthatobias.bookcatalogue.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.validation.ValidationException;
 
 import io.samanthatobias.bookcatalogue.model.Author;
 import io.samanthatobias.bookcatalogue.service.AuthorService;
-import org.junit.jupiter.api.BeforeEach;
+import io.samanthatobias.bookcatalogue.validator.AuthorValidator;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@WebMvcTest(AuthorController.class)
 class AuthorControllerTest {
 
-	@InjectMocks
-	private AuthorController authorController;
+	@Autowired
+	private MockMvc mockMvc;
 
-	@Mock
+	@MockBean
 	private AuthorService authorService;
 
-	@Mock
-	private Model model;
-
-	@Mock
-	private BindingResult bindingResult;
-
-	@Mock
-	private RedirectAttributes ra;
-
-	@BeforeEach
-	public void setup() {
-		MockitoAnnotations.openMocks(this);
-	}
+	@MockBean
+	private AuthorValidator authorValidator;
 
 	@Test
-	public void testSaveAuthorWithErrors() {
-		Author author = new Author();
-		when(bindingResult.hasErrors()).thenReturn(true);
+	void viewAuthorPage() throws Exception {
+		List<Author> authors = Arrays.asList(new Author(), new Author());
+		given(authorService.getAll()).willReturn(authors);
 
-		String viewName = authorController.saveAuthor(author, bindingResult, model);
-		verify(authorService, never()).save(any(Author.class));
-		assertThat(viewName).isEqualTo("add_author");
-	}
+		mockMvc.perform(get("/authors"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("authors"));
 
-	@Test
-	public void testSaveAuthorWithoutErrors() {
-		Author author = new Author();
-		when(bindingResult.hasErrors()).thenReturn(false);
-
-		String viewName = authorController.saveAuthor(author, bindingResult, model);
-		verify(authorService, times(1)).save(any(Author.class));
-		assertThat(viewName).isEqualTo("redirect:/authors");
-	}
-
-	@Test
-	public void testViewAuthorPage() {
-		String viewName = authorController.viewAuthorPage(model);
 		verify(authorService, times(1)).getAll();
-		verify(model, times(1)).addAttribute(anyString(), any());
-		assertThat(viewName).isEqualTo("authors");
 	}
 
 	@Test
-	public void testShowNewAuthorForm() {
-		String viewName = authorController.showNewAuthorForm(model);
-		verify(model, times(1)).addAttribute(anyString(), any());
-		assertThat(viewName).isEqualTo("new_author");
+	void showNewAuthorForm() throws Exception {
+		mockMvc.perform(get("/authors/showNewAuthorForm"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("new_author"));
 	}
 
 	@Test
-	public void testDeleteAuthorWithoutErrors() {
-		Long id = 1L;
-		String viewName = authorController.deleteAuthor(id, ra);
-		verify(authorService, times(1)).delete(id);
-		assertThat(viewName).isEqualTo("redirect:/authors");
+	void saveAuthorWithErrors() throws Exception {
+		List<String> errors = Arrays.asList("Error1", "Error2");
+		given(authorValidator.validate(any())).willReturn(errors);
+
+		mockMvc.perform(post("/authors/saveAuthor"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("new_author"));
+
+		verify(authorService, times(0)).save(any());
 	}
 
 	@Test
-	public void testDeleteAuthorWithValidationError() {
-		Long id = 1L;
-		doThrow(new ValidationException("Error")).when(authorService).delete(id);
-		String viewName = authorController.deleteAuthor(id, ra);
-		verify(authorService, times(1)).delete(id);
-		verify(ra, times(1)).addFlashAttribute(anyString(), any());
-		assertThat(viewName).isEqualTo("redirect:/authors");
+	void saveAuthorWithoutErrors() throws Exception {
+		given(authorValidator.validate(any())).willReturn(new ArrayList<>());
+
+		mockMvc.perform(post("/authors/saveAuthor"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/authors"));
+
+		verify(authorService, times(1)).save(any());
 	}
 
+	@Test
+	void deleteAuthorWithException() throws Exception {
+		ValidationException exception = new ValidationException("error");
+
+		doThrow(exception).when(authorService).delete(anyLong());
+
+		MvcResult result = mockMvc.perform(get("/authors/delete/1"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/authors"))
+				.andReturn();
+
+		verify(authorService, times(1)).delete(anyLong());
+
+		// Check that the flash attribute has been set
+		Object flashAttributeErrors = result.getFlashMap().get("errors");
+		assertThat(flashAttributeErrors).isEqualTo(List.of(exception.getMessage()));
+	}
+
+
+	@Test
+	void deleteAuthorWithoutException() throws Exception {
+		doNothing().when(authorService).delete(anyLong());
+
+		mockMvc.perform(get("/authors/delete/1"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/authors"));
+
+		verify(authorService, times(1)).delete(anyLong());
+	}
+
+	@Test
+	void showEditForm() throws Exception {
+		Author author = new Author();
+		given(authorService.getById(anyLong())).willReturn(author);
+
+		mockMvc.perform(get("/authors/edit/1"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("edit_author"));
+
+		verify(authorService, times(1)).getById(anyLong());
+	}
+
+	@Test
+	void updateAuthorWithErrors() throws Exception {
+		List<String> errors = Arrays.asList("Error1", "Error2");
+		given(authorValidator.validate(any())).willReturn(errors);
+
+		mockMvc.perform(post("/authors/updateAuthor"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("edit_author"));
+
+		verify(authorService, times(0)).save(any());
+	}
+
+	@Test
+	void updateAuthorWithoutErrors() throws Exception {
+		given(authorValidator.validate(any())).willReturn(new ArrayList<>());
+
+		mockMvc.perform(post("/authors/updateAuthor"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/authors"));
+
+		verify(authorService, times(1)).save(any());
+	}
 }

@@ -7,97 +7,155 @@ import io.samanthatobias.bookcatalogue.model.Author;
 import io.samanthatobias.bookcatalogue.model.Book;
 import io.samanthatobias.bookcatalogue.service.AuthorService;
 import io.samanthatobias.bookcatalogue.service.BookService;
+import io.samanthatobias.bookcatalogue.validator.BookValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@WebMvcTest(BookController.class)
 class BookControllerTest {
 
-	@InjectMocks
-	private BookController bookController;
+	@Autowired
+	private MockMvc mockMvc;
 
-	@Mock
+	@MockBean
 	private BookService bookService;
 
-	@Mock
+	@MockBean
 	private AuthorService authorService;
 
-	@Mock
-	private Model model;
+	@MockBean
+	private BookValidator bookValidator;
 
-	@Mock
-	private BindingResult bindingResult;
+	private Book book;
+	private List<Author> authors;
 
 	@BeforeEach
-	public void setup() {
-		MockitoAnnotations.openMocks(this);
-	}
+	void setUp() {
+		book = new Book();
+		book.setId(1L);
+		book.setTitle("Book Title");
 
-	@Test
-	public void testViewHomePage() {
-		List<Book> books = Arrays.asList(new Book(), new Book());
-		when(bookService.getAll()).thenReturn(books);
+		Author author = new Author();
+		author.setId(1L);
+		author.setName("Author Name");
+		book.setAuthor(author);
 
-		String viewName = bookController.viewHomePage(model);
+		authors = List.of(author);
 
-		verify(bookService, times(1)).getAll();
-		verify(model, times(1)).addAttribute("books", books);
-		assertThat(viewName).isEqualTo("books");
-	}
-
-	@Test
-	public void testShowNewBookForm() {
-		List<Author> authors = Arrays.asList(new Author(), new Author());
+		when(bookService.getAll()).thenReturn(List.of(book));
 		when(authorService.getAll()).thenReturn(authors);
-
-		String viewName = bookController.showNewBookForm(model);
-
-		verify(authorService, times(1)).getAll();
-		verify(model, times(1)).addAttribute(eq("authors"), any());
-		verify(model, times(1)).addAttribute(eq("book"), any());
-		assertThat(viewName).isEqualTo("new_book");
 	}
 
 	@Test
-	public void testSaveBookWithErrors() {
-		Book book = new Book();
-		when(bindingResult.hasErrors()).thenReturn(true);
-		List<Author> authors = Arrays.asList(new Author(), new Author());
-		when(authorService.getAll()).thenReturn(authors);
+	void viewHomePage() throws Exception {
+		when(bookService.getAll()).thenReturn(List.of(book));
 
-		String viewName = bookController.saveBook(book, bindingResult, model);
-
-		verify(bookService, never()).save(any(Book.class));
-		verify(model, times(1)).addAttribute("authors", authors);
-		assertThat(viewName).isEqualTo("new_book");
+		mockMvc.perform(get("/books"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("books"))
+				.andExpect(view().name("books"));
 	}
 
 	@Test
-	public void testSaveBookWithoutErrors() {
-		Book book = new Book();
-		when(bindingResult.hasErrors()).thenReturn(false);
+	void showNewBookForm() throws Exception {
+		mockMvc.perform(get("/books/showNewBookForm"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("book"))
+				.andExpect(model().attributeExists("authors"))
+				.andExpect(view().name("new_book"));
+	}
 
-		String viewName = bookController.saveBook(book, bindingResult, model);
+	@Test
+	void saveBookWithErrors() throws Exception {
+		when(bookValidator.validate(any(Book.class))).thenReturn(Arrays.asList("error"));
+
+		MvcResult result = mockMvc.perform(post("/books/saveBook")
+						.flashAttr("book", book))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("errors"))
+				.andExpect(model().attributeExists("authors"))
+				.andExpect(view().name("new_book"))
+				.andReturn();
+
+		Object modelAttributeErrors = result.getModelAndView().getModel().get("errors");
+		assertThat(modelAttributeErrors).isEqualTo(Arrays.asList("error"));
+
+		verify(bookService, times(0)).save(any(Book.class));
+	}
+
+	@Test
+	void saveBook() throws Exception {
+		when(bookValidator.validate(any(Book.class))).thenReturn(Arrays.asList());
+
+		mockMvc.perform(post("/books/saveBook")
+						.flashAttr("book", book))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/books"));
 
 		verify(bookService, times(1)).save(any(Book.class));
-		assertThat(viewName).isEqualTo("redirect:/books");
 	}
 
 	@Test
-	public void testDeleteBook() {
-		Long id = 1L;
+	void deleteBook() throws Exception {
+		mockMvc.perform(get("/books/delete/1"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/books"));
 
-		String viewName = bookController.deleteBook(id, model);
+		verify(bookService, times(1)).delete(anyLong());
+	}
 
-		verify(bookService, times(1)).delete(id);
-		assertThat(viewName).isEqualTo("redirect:/books");
+	@Test
+	void showEditForm() throws Exception {
+		when(bookService.getById(anyLong())).thenReturn(book);
+
+		mockMvc.perform(get("/books/edit/1"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("book"))
+				.andExpect(model().attributeExists("authors"))
+				.andExpect(view().name("edit_book"));
+	}
+
+	@Test
+	void updateBookWithErrors() throws Exception {
+		when(bookValidator.validate(any(Book.class))).thenReturn(Arrays.asList("error"));
+
+		MvcResult result = mockMvc.perform(post("/books/updateBook")
+						.flashAttr("book", book))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("errors"))
+				.andExpect(model().attributeExists("authors"))
+				.andExpect(view().name("edit_book"))
+				.andReturn();
+
+		Object modelAttributeErrors = result.getModelAndView().getModel().get("errors");
+		assertThat(modelAttributeErrors).isEqualTo(Arrays.asList("error"));
+
+		verify(bookService, times(0)).save(any(Book.class));
+	}
+
+	@Test
+	void updateBook() throws Exception {
+		when(bookValidator.validate(any(Book.class))).thenReturn(Arrays.asList());
+
+		mockMvc.perform(post("/books/updateBook")
+						.flashAttr("book", book))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/books"));
+
+		verify(bookService, times(1)).save(any(Book.class));
 	}
 
 }

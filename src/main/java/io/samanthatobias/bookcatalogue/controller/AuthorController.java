@@ -1,12 +1,12 @@
 package io.samanthatobias.bookcatalogue.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.ValidationException;
 
 import io.samanthatobias.bookcatalogue.model.Author;
 import io.samanthatobias.bookcatalogue.service.AuthorService;
+import io.samanthatobias.bookcatalogue.validator.AuthorValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +19,9 @@ public class AuthorController {
 
 	@Autowired
 	private AuthorService authorService;
+
+	@Autowired
+	private AuthorValidator authorValidator;
 
 	@GetMapping
 	public String viewAuthorPage(Model model) {
@@ -35,7 +38,7 @@ public class AuthorController {
 
 	@PostMapping("/saveAuthor")
 	public String saveAuthor(@ModelAttribute("author") Author author, Model model) {
-		List<String> errors = validateAuthor(author);
+		List<String> errors = authorValidator.validate(author);
 		if (!errors.isEmpty()) {
 			model.addAttribute("errors", errors);
 			return "new_author";
@@ -63,21 +66,13 @@ public class AuthorController {
 
 	@PostMapping("/updateAuthor")
 	public String updateAuthor(@ModelAttribute("author") Author author, Model model) {
-		List<String> errors = validateAuthor(author);
+		List<String> errors = authorValidator.validate(author);
 		if (!errors.isEmpty()) {
 			model.addAttribute("errors", errors);
 			return "edit_author";
 		}
 		authorService.save(author);
 		return "redirect:/authors";
-	}
-
-	private List<String> validateAuthor(Author author) {
-		List<String> errors = new ArrayList<>();
-		if (author.getName() == null || author.getName().trim().isEmpty()) {
-			errors.add("Author name is required.");
-		}
-		return errors;
 	}
 
 }
