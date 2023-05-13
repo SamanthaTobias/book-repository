@@ -3,6 +3,7 @@ package io.samanthatobias.bookcatalogue.service;
 import java.util.List;
 import java.util.Optional;
 
+import io.samanthatobias.bookcatalogue.exception.ResourceNotFoundException;
 import io.samanthatobias.bookcatalogue.model.Book;
 import io.samanthatobias.bookcatalogue.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,12 @@ public class BookService {
 		bookRepository.save(book);
 	}
 
-	public void deleteBook(Long id) throws Exception {
+	public void deleteBook(Long id) {
 		Optional<Book> book = bookRepository.findById(id);
 		if (book.isPresent()) {
 			bookRepository.deleteById(id);
 		} else {
-			throw new Exception("Book not found.");
+			throw new ResourceNotFoundException(id);
 		}
 	}
 

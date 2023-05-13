@@ -46,7 +46,7 @@ public class BookController {
 	}
 
 	@GetMapping("/delete/{id}")
-	public String deleteBook(@PathVariable("id") Long id, Model model) throws Exception {
+	public String deleteBook(@PathVariable("id") Long id, Model model) {
 		bookService.deleteBook(id);
 		return "redirect:/books";
 	}

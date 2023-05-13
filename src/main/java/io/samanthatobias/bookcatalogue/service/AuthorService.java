@@ -3,6 +3,9 @@ package io.samanthatobias.bookcatalogue.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.ValidationException;
+
+import io.samanthatobias.bookcatalogue.exception.ResourceNotFoundException;
 import io.samanthatobias.bookcatalogue.model.Author;
 import io.samanthatobias.bookcatalogue.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +25,16 @@ public class AuthorService {
 		authorRepository.save(author);
 	}
 
-	public void deleteAuthor(Long id) throws Exception {
+	public void deleteAuthor(Long id) {
 		Optional<Author> author = authorRepository.findById(id);
 		if (author.isPresent()) {
 			if (author.get().getBooks().isEmpty()) {
 				authorRepository.deleteById(id);
 			} else {
-				throw new Exception("Author has associated books.");
+				throw new ValidationException("Cannot delete author with existing books.");
 			}
 		} else {
-			throw new Exception("Author not found.");
+			throw new ResourceNotFoundException(id);
 		}
 	}
 

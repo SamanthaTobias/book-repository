@@ -1,6 +1,7 @@
 package io.samanthatobias.bookcatalogue.controller;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 
 import io.samanthatobias.bookcatalogue.model.Author;
 import io.samanthatobias.bookcatalogue.service.AuthorService;
@@ -44,8 +45,8 @@ public class AuthorController {
 	public String deleteAuthor(@PathVariable("id") Long id, RedirectAttributes ra) {
 		try {
 			authorService.deleteAuthor(id);
-		} catch (Exception e) {
-			ra.addFlashAttribute("error", "Cannot delete author with existing books.");
+		} catch (ValidationException e) {
+			ra.addFlashAttribute("error", e.getMessage());
 		}
 		return "redirect:/authors";
 	}
