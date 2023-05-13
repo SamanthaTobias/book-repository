@@ -44,6 +44,9 @@ jobs:
                 distribution: 'adopt'
                 java-version: '17'
 
+        -   name: Remove old CodeQL databases
+            run: rm -rf ${{ runner.temp }}/codeql_databases
+
         -   name: Initialize CodeQL
             uses: github/codeql-action/init@v2
             with:
