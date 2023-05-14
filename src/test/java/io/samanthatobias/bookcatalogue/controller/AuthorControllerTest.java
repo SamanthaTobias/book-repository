@@ -6,9 +6,11 @@ import java.util.List;
 
 import javax.validation.ValidationException;
 
+import io.samanthatobias.bookcatalogue.BasicAuthInterceptor;
 import io.samanthatobias.bookcatalogue.model.Author;
 import io.samanthatobias.bookcatalogue.service.AuthorService;
 import io.samanthatobias.bookcatalogue.validator.AuthorValidator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,6 +39,14 @@ class AuthorControllerTest {
 	@MockBean
 	private AuthorValidator authorValidator;
 
+	@MockBean
+	private BasicAuthInterceptor basicAuthInterceptor;
+
+	@BeforeEach
+	void setUp() {
+		when(basicAuthInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+	}
+
 	@Test
 	void viewAuthorPage() throws Exception {
 		List<Author> authors = Arrays.asList(new Author(), new Author());
@@ -61,7 +71,7 @@ class AuthorControllerTest {
 		List<String> errors = Arrays.asList("Error1", "Error2");
 		given(authorValidator.validate(any())).willReturn(errors);
 
-		mockMvc.perform(post("/authors/saveAuthor"))
+		mockMvc.perform(post("/authors/save"))
 				.andExpect(status().isOk())
 				.andExpect(view().name("new_author"));
 
@@ -72,7 +82,7 @@ class AuthorControllerTest {
 	void saveAuthorWithoutErrors() throws Exception {
 		given(authorValidator.validate(any())).willReturn(new ArrayList<>());
 
-		mockMvc.perform(post("/authors/saveAuthor"))
+		mockMvc.perform(post("/authors/save"))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/authors"));
 
@@ -126,7 +136,7 @@ class AuthorControllerTest {
 		List<String> errors = Arrays.asList("Error1", "Error2");
 		given(authorValidator.validate(any())).willReturn(errors);
 
-		mockMvc.perform(post("/authors/updateAuthor"))
+		mockMvc.perform(post("/authors/edit"))
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_author"));
 
@@ -137,7 +147,7 @@ class AuthorControllerTest {
 	void updateAuthorWithoutErrors() throws Exception {
 		given(authorValidator.validate(any())).willReturn(new ArrayList<>());
 
-		mockMvc.perform(post("/authors/updateAuthor"))
+		mockMvc.perform(post("/authors/save"))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/authors"));
 

@@ -1,8 +1,9 @@
 package io.samanthatobias.bookcatalogue.controller;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
+import io.samanthatobias.bookcatalogue.BasicAuthInterceptor;
 import io.samanthatobias.bookcatalogue.model.Author;
 import io.samanthatobias.bookcatalogue.model.Book;
 import io.samanthatobias.bookcatalogue.service.AuthorService;
@@ -39,8 +40,10 @@ class BookControllerTest {
 	@MockBean
 	private BookValidator bookValidator;
 
+	@MockBean
+	private BasicAuthInterceptor basicAuthInterceptor;
+
 	private Book book;
-	private List<Author> authors;
 
 	@BeforeEach
 	void setUp() {
@@ -53,10 +56,11 @@ class BookControllerTest {
 		author.setName("Author Name");
 		book.setAuthor(author);
 
-		authors = List.of(author);
+		List<Author> authors = List.of(author);
 
 		when(bookService.getAll()).thenReturn(List.of(book));
 		when(authorService.getAll()).thenReturn(authors);
+		when(basicAuthInterceptor.preHandle(any(), any(), any())).thenReturn(true);
 	}
 
 	@Test
@@ -80,9 +84,9 @@ class BookControllerTest {
 
 	@Test
 	void saveBookWithErrors() throws Exception {
-		when(bookValidator.validate(any(Book.class))).thenReturn(Arrays.asList("error"));
+		when(bookValidator.validate(any(Book.class))).thenReturn(List.of("error"));
 
-		MvcResult result = mockMvc.perform(post("/books/saveBook")
+		MvcResult result = mockMvc.perform(post("/books/save")
 						.flashAttr("book", book))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("errors"))
@@ -90,17 +94,17 @@ class BookControllerTest {
 				.andExpect(view().name("new_book"))
 				.andReturn();
 
-		Object modelAttributeErrors = result.getModelAndView().getModel().get("errors");
-		assertThat(modelAttributeErrors).isEqualTo(Arrays.asList("error"));
+		Object modelAttributeErrors = Objects.requireNonNull(result.getModelAndView()).getModel().get("errors");
+		assertThat(modelAttributeErrors).isEqualTo(List.of("error"));
 
 		verify(bookService, times(0)).save(any(Book.class));
 	}
 
 	@Test
 	void saveBook() throws Exception {
-		when(bookValidator.validate(any(Book.class))).thenReturn(Arrays.asList());
+		when(bookValidator.validate(any(Book.class))).thenReturn(List.of());
 
-		mockMvc.perform(post("/books/saveBook")
+		mockMvc.perform(post("/books/save")
 						.flashAttr("book", book))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/books"));
@@ -130,9 +134,9 @@ class BookControllerTest {
 
 	@Test
 	void updateBookWithErrors() throws Exception {
-		when(bookValidator.validate(any(Book.class))).thenReturn(Arrays.asList("error"));
+		when(bookValidator.validate(any(Book.class))).thenReturn(List.of("error"));
 
-		MvcResult result = mockMvc.perform(post("/books/updateBook")
+		MvcResult result = mockMvc.perform(post("/books/edit")
 						.flashAttr("book", book))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("errors"))
@@ -140,17 +144,17 @@ class BookControllerTest {
 				.andExpect(view().name("edit_book"))
 				.andReturn();
 
-		Object modelAttributeErrors = result.getModelAndView().getModel().get("errors");
-		assertThat(modelAttributeErrors).isEqualTo(Arrays.asList("error"));
+		Object modelAttributeErrors = Objects.requireNonNull(result.getModelAndView()).getModel().get("errors");
+		assertThat(modelAttributeErrors).isEqualTo(List.of("error"));
 
 		verify(bookService, times(0)).save(any(Book.class));
 	}
 
 	@Test
 	void updateBook() throws Exception {
-		when(bookValidator.validate(any(Book.class))).thenReturn(Arrays.asList());
+		when(bookValidator.validate(any(Book.class))).thenReturn(List.of());
 
-		mockMvc.perform(post("/books/updateBook")
+		mockMvc.perform(post("/books/edit")
 						.flashAttr("book", book))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/books"));
