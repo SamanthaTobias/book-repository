@@ -9,7 +9,7 @@
 <ul class="error-message" th:if="${errors != null}">
     <li th:each="error : ${errors}" th:text="${error}"></li>
 </ul>
-<form action="#" method="post" th:action="@{/books/saveBook}" th:object="${book}">
+<form action="#" method="post" th:action="@{/books/save}" th:object="${book}">
     <table>
         <tr>
             <td>Title:</td>

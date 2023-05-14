@@ -39,7 +39,7 @@ public class BookController {
 		return "new_book";
 	}
 
-	@PostMapping("/saveBook")
+	@PostMapping("/save")
 	public String saveBook(@ModelAttribute("book") Book book, Model model) {
 		List<String> errors = bookValidator.validate(book);
 		if (!errors.isEmpty()) {
@@ -66,8 +66,8 @@ public class BookController {
 		return "edit_book";
 	}
 
-	@PostMapping("/updateBook")
-	public String updateBook(@ModelAttribute("book") Book book, Model model) {
+	@PostMapping("/edit")
+	public String editBook(@ModelAttribute("book") Book book, Model model) {
 		List<String> errors = bookValidator.validate(book);
 		if (!errors.isEmpty()) {
 			model.addAttribute("errors", errors);
