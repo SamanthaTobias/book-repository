@@ -1,0 +1,3 @@
+# rename to auth.properties
+basic.auth.username=ReplaceWithUsername
+basic.auth.password=ReplaceWithPassword
