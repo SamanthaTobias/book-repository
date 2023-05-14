@@ -36,7 +36,7 @@ public class AuthorController {
 		return "new_author";
 	}
 
-	@PostMapping("/saveAuthor")
+	@PostMapping("/save")
 	public String saveAuthor(@ModelAttribute("author") Author author, Model model) {
 		List<String> errors = authorValidator.validate(author);
 		if (!errors.isEmpty()) {
@@ -64,8 +64,8 @@ public class AuthorController {
 		return "edit_author";
 	}
 
-	@PostMapping("/updateAuthor")
-	public String updateAuthor(@ModelAttribute("author") Author author, Model model) {
+	@PostMapping("/edit")
+	public String editAuthor(@ModelAttribute("author") Author author, Model model) {
 		List<String> errors = authorValidator.validate(author);
 		if (!errors.isEmpty()) {
 			model.addAttribute("errors", errors);
