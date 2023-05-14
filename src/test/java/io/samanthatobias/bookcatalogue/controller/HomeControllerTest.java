@@ -1,26 +1,19 @@
 package io.samanthatobias.bookcatalogue.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.springframework.ui.Model;
+import org.springframework.validation.support.BindingAwareModelMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class HomeControllerTest {
-
-	@InjectMocks
-	private HomeController homeController;
-
-	@BeforeEach
-	public void setup() {
-		MockitoAnnotations.openMocks(this);
-	}
+public class HomeControllerTest {
 
 	@Test
-	public void testSaveAuthorWithoutErrors() {
-		String viewName = homeController.viewHomePage();
-		assertThat(viewName).isEqualTo("home");
+	public void testHomePage() {
+		HomeController controller = new HomeController();
+		Model model = new BindingAwareModelMap();
+		String result = controller.viewHomePage(model);
+		assertThat(result).isEqualTo("home");
 	}
 
 }
