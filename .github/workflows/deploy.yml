@@ -3,7 +3,7 @@ name: Deploy to Google Cloud
 on:
     push:
         branches:
-        - production
+        - master
 
 jobs:
     deploy:
@@ -20,5 +20,12 @@ jobs:
                 service_account_key: ${{ secrets.GCP_SA_KEY }}
                 export_default_credentials: true
 
+        -   name: Check for changes since last deployment
+            id: diff
+            run: |
+                DIFF=$(git diff --quiet HEAD^ HEAD -- . ':!.github' || echo "diff")
+                echo "::set-output name=diff::$DIFF"
+
         -   name: Deploy to App Engine
+            if: steps.diff.outputs.diff == 'diff'
             run: gcloud app deploy
