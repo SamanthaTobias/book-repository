@@ -7,8 +7,7 @@ on:
         branches: [ master, production ]
 
 jobs:
-    build:
-
+    build_and_test:
         runs-on: ubuntu-latest
 
         steps:
@@ -26,5 +25,11 @@ jobs:
                 restore-keys: ${{ runner.os }}-m2
         -   name: Build with Maven
             run: mvn -B package --file pom.xml
+            env:
+                BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
+                BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
         -   name: Test with Maven
             run: mvn test --file pom.xml
+            env:
+                BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
+                BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
