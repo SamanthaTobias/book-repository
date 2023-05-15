@@ -28,9 +28,14 @@ jobs:
                 DIFF=$(git diff --quiet HEAD^ HEAD -- . ':!.github' || echo "diff")
                 echo "::set-output name=diff::$DIFF"
 
-        -   name: Copy .git directory to project root
+        #        -   name: Copy .git directory to project root
+        #            run: |
+        #                cp -R .git ./
+
+        -   name: Print working directory and list files
             run: |
-                cp -R .git ./
+                pwd
+                ls -la
 
         -   name: Deploy to App Engine
             if: steps.diff.outputs.diff == 'diff'
