@@ -12,6 +12,8 @@ jobs:
         steps:
         -   name: Checkout code
             uses: actions/checkout@v2
+            with:
+                fetch-depth: 0  # Fetch all history
 
         -   name: Set up Google Cloud SDK
             uses: google-github-actions/setup-gcloud@v0.2.1
