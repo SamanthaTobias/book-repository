@@ -48,7 +48,7 @@ jobs:
 
         -   name: Deploy to App Engine
             if: steps.diff.outputs.diff == 'diff'
-            run: gcloud app deploy -v [YOUR_VERSION] --project=[YOUR_PROJECT_ID] --set-env-vars=MAVEN_OPTS="-Dgit.skip=true"
+            run: gcloud app deploy --set-env-vars=MAVEN_OPTS="-Dgit.skip=true"
 
         -   name: Print target/classes directory and list files
             run: |
