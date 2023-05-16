@@ -12,3 +12,6 @@ resources:
     disk_size_gb: 10
 entrypoint:
     class: io.samanthatobias.bookcatalogue.BookCatalogueApplication
+spring:
+    profiles:
+        active=cloud:
