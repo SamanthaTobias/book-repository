@@ -31,6 +31,10 @@ jobs:
                 DIFF=$(git diff --quiet HEAD^ HEAD -- . ':!.github' || echo "diff")
                 echo "::set-output name=diff::$DIFF"
 
+            # need to make target/classes/git.properties
+        -   name: Build with Maven
+            run: mvn package -DskipTests
+
         -   name: Print working directory and list files
             run: |
                 pwd
@@ -43,4 +47,3 @@ jobs:
         -   name: Print target/classes directory and list files
             run: |
                 ls -la target/classes
-
