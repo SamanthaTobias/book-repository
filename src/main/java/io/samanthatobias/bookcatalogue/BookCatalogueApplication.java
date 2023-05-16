@@ -28,12 +28,18 @@ public class BookCatalogueApplication {
 	@Configuration
 	@PropertySource("classpath:auth-local.properties")
 	static class Local {
+		static {
+			System.out.println("AUTH PROPERTIES: LOCAL");
+		}
 	}
 
 	@Profile("cloud")
 	@Configuration
 	@PropertySource("classpath:auth-cloud.properties")
 	static class Cloud {
+		static {
+			System.out.println("AUTH PROPERTIES: CLOUD");
+		}
 	}
 
 }
