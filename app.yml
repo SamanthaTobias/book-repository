@@ -12,5 +12,4 @@ resources:
     disk_size_gb: 10
 entrypoint:
     class: io.samanthatobias.bookcatalogue.BookCatalogueApplication
-env_variables:
-    SPRING_PROFILES_ACTIVE: "gcp"
+# env_variables are set in deploy.yml

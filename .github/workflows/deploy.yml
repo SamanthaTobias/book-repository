@@ -48,10 +48,16 @@ jobs:
                 pwd
                 ls -la
 
+        -   name: Prepare app.yaml
+            run: |
+                echo "env_variables:" >> app.yaml
+                echo "  SPRING_PROFILES_ACTIVE: 'cloud'" >> app.yaml
+                echo "  BASIC_AUTH_USERNAME: '${{ secrets.BASIC_AUTH_USERNAME }}'" >> app.yaml
+                echo "  BASIC_AUTH_PASSWORD: '${{ secrets.BASIC_AUTH_PASSWORD }}'" >> app.yaml
+
         -   name: Deploy to App Engine
             if: steps.diff.outputs.diff == 'diff'
-            run: gcloud app deploy --set-env-vars=MAVEN_OPTS="-Dgit.skip=true",BASIC_AUTH_USERNAME=${{ secrets.BASIC_AUTH_USERNAME }},BASIC_AUTH_PASSWORD=${{ secrets.BASIC_AUTH_PASSWORD }}
-
+            run: gcloud app deploy --set-env-vars=MAVEN_OPTS="-Dgit.skip=true"
 
         -   name: Print target/classes directory and list files
             run: |
