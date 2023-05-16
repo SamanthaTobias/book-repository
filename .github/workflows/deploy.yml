@@ -39,3 +39,8 @@ jobs:
         -   name: Deploy to App Engine
             if: steps.diff.outputs.diff == 'diff'
             run: gcloud app deploy
+
+        -   name: Print target/classes directory and list files
+            run: |
+                ls -la target/classes
+
