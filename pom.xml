@@ -120,7 +120,7 @@
                 <configuration>
                     <dotGitDirectory>${project.basedir}/.git/</dotGitDirectory>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    <generateGitPropertiesFilename>${project.basedir}/src/main/resources/git.properties
                     </generateGitPropertiesFilename>
                     <format>properties</format>
                     <gitDescribe>
