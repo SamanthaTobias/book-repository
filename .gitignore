@@ -33,5 +33,5 @@ build/
 .vscode/
 
 # other
-/src/main/resources/auth.properties
+/src/main/resources/auth-local.properties
 /src/main/resources/git.properties

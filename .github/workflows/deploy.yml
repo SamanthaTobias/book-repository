@@ -37,9 +37,11 @@ jobs:
                 distribution: 'adopt'
                 java-version: '17'
 
-                # need to make target/classes/git.properties
+            # need to make target/classes/git.properties, does not work in cloud
         -   name: Build with Maven
             run: mvn package -DskipTests
+            env:
+                SPRING_PROFILES_ACTIVE: github
 
         -   name: Print working directory and list files
             run: |
@@ -48,7 +50,8 @@ jobs:
 
         -   name: Deploy to App Engine
             if: steps.diff.outputs.diff == 'diff'
-            run: gcloud app deploy --set-env-vars=MAVEN_OPTS="-Dgit.skip=true"
+            run: gcloud app deploy --set-env-vars=MAVEN_OPTS="-Dgit.skip=true",BASIC_AUTH_USERNAME=${{ secrets.BASIC_AUTH_USERNAME }},BASIC_AUTH_PASSWORD=${{ secrets.BASIC_AUTH_PASSWORD }}
+
 
         -   name: Print target/classes directory and list files
             run: |

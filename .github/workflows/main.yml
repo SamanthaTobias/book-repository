@@ -28,8 +28,10 @@ jobs:
             env:
                 BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
                 BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
+                SPRING_PROFILES_ACTIVE: cloud
         -   name: Test with Maven
             run: mvn test --file pom.xml
             env:
                 BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
                 BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
+                SPRING_PROFILES_ACTIVE: cloud

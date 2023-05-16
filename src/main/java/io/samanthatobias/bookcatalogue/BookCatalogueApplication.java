@@ -8,6 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
 @PropertySource("classpath:git.properties")
+@PropertySource("classpath:auth-${spring.profiles.active}.properties")
 public class BookCatalogueApplication {
 
 	public static void main(String[] args) {
