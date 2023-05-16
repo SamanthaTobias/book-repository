@@ -118,8 +118,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <dotGitDirectory>/home/runner/work/book-repository/book-repository/.git/</dotGitDirectory>
-                    <!--                    <dotGitDirectory>${project.basedir}/.git/</dotGitDirectory>-->
+                    <!--                    <dotGitDirectory>/home/runner/work/book-repository/book-repository/.git/</dotGitDirectory>-->
+                    <dotGitDirectory>${project.basedir}/.git/</dotGitDirectory>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
                     </generateGitPropertiesFilename>

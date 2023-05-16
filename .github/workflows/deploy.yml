@@ -13,7 +13,7 @@ jobs:
         -   name: Checkout code
             uses: actions/checkout@v2
             with:
-                fetch-depth: 0  # Fetch all history
+                fetch-depth: 0
 
         -   name: Set up Google Cloud SDK
             uses: google-github-actions/setup-gcloud@v0.2.1
@@ -33,6 +33,7 @@ jobs:
                 pwd
                 ls -la
 
+        # error because I need my git folder available at this step
         -   name: Deploy to App Engine
             if: steps.diff.outputs.diff == 'diff'
             run: gcloud app deploy
