@@ -126,6 +126,7 @@
                     <gitDescribe>
                         <always>false</always>
                     </gitDescribe>
+                    <skip>${git.skip}</skip>
                 </configuration>
             </plugin>
         </plugins>
