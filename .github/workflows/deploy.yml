@@ -50,11 +50,11 @@ jobs:
 
         -   name: Prepare app.yaml
             run: |
-                echo "env_variables:" >> app.yaml
-                echo "  SPRING_PROFILES_ACTIVE: 'cloud'" >> app.yaml
-                echo "  BASIC_AUTH_USERNAME: '${{ secrets.BASIC_AUTH_USERNAME }}'" >> app.yaml
-                echo "  BASIC_AUTH_PASSWORD: '${{ secrets.BASIC_AUTH_PASSWORD }}'" >> app.yaml
-                echo "  MAVEN_OPTS: '-Dgit.skip=true'" >> app.yaml
+                echo "env_variables:" >> app.yml
+                echo "  SPRING_PROFILES_ACTIVE: 'cloud'" >> app.yml
+                echo "  BASIC_AUTH_USERNAME: '${{ secrets.BASIC_AUTH_USERNAME }}'" >> app.yml
+                echo "  BASIC_AUTH_PASSWORD: '${{ secrets.BASIC_AUTH_PASSWORD }}'" >> app.yml
+                echo "  MAVEN_OPTS: '-Dgit.skip=true'" >> app.yml
 
         -   name: Deploy to App Engine
             if: steps.diff.outputs.diff == 'diff'
