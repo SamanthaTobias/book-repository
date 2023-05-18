@@ -13,5 +13,5 @@ resources:
 entrypoint:
     class: io.samanthatobias.bookcatalogue.BookCatalogueApplication
 
-# KEEP AT END OF FILE
+# KEEP AT END OF FILE WITH NEWLINE
 env_variables:
