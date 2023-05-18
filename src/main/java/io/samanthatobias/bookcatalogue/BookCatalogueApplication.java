@@ -1,18 +1,33 @@
 package io.samanthatobias.bookcatalogue;
 
+import java.util.Arrays;
+
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 @SpringBootApplication
 @PropertySource("classpath:git.properties")
-//@PropertySource("classpath:auth-${spring.profiles.active}.properties")
+@EnableConfigurationProperties
 public class BookCatalogueApplication {
+
+	@Autowired
+	private Environment env;
 
 	public static void main(String[] args) {
 		SpringApplication.run(BookCatalogueApplication.class, args);
+	}
+
+	@PostConstruct
+	public void printProfiles() {
+		String[] activeProfiles = env.getActiveProfiles();
+		Arrays.stream(activeProfiles).forEach(System.out::println);
 	}
 
 	@Profile("local")
@@ -32,5 +47,6 @@ public class BookCatalogueApplication {
 			System.out.println("AUTH PROPERTIES: CLOUD");
 		}
 	}
+
 
 }

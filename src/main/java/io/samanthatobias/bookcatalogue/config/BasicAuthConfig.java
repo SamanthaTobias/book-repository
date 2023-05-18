@@ -11,12 +11,6 @@ public class BasicAuthConfig {
 	@Autowired
 	private BasicAuthProperties basicAuthProperties;
 
-//	@Value("${basic.auth.username}")
-//	private String username;
-//
-//	@Value("${basic.auth.password}")
-//	private String password;
-
 	@Bean
 	public BasicAuthInterceptor basicAuthInterceptor() {
 		return new BasicAuthInterceptor(
