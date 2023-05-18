@@ -1,8 +1,5 @@
 package io.samanthatobias.bookcatalogue;
 
-import java.util.Arrays;
-
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,12 +19,6 @@ public class BookCatalogueApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BookCatalogueApplication.class, args);
-	}
-
-	@PostConstruct
-	public void printProfiles() {
-		String[] activeProfiles = env.getActiveProfiles();
-		Arrays.stream(activeProfiles).forEach(System.out::println);
 	}
 
 	@Profile("local")
