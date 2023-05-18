@@ -48,13 +48,17 @@ jobs:
         -   name: Alter .gcloudignore
             run: echo '!.git' > .gcloudignore # TODO: should skip this, but Dgt.skip=true later on doesnt work
 
-        -   name: Prepare app.yml
-            run: |
-                echo "  BASIC_AUTH_USERNAME: '${{ secrets.BASIC_AUTH_USERNAME }}'" >> app.yml
-                echo "  BASIC_AUTH_PASSWORD: '${{ secrets.BASIC_AUTH_PASSWORD }}'" >> app.yml
-                echo "  MAVEN_OPTS: '-Dgit.skip=true'" >> app.yml
-                cat app.yml
+        #        -   name: Prepare app.yml
+        #            run: |
+        #                echo "  BASIC_AUTH_USERNAME: '${{ secrets.BASIC_AUTH_USERNAME }}'" >> app.yml
+        #                echo "  BASIC_AUTH_PASSWORD: '${{ secrets.BASIC_AUTH_PASSWORD }}'" >> app.yml
+        #                echo "  MAVEN_OPTS: '-Dgit.skip=true'" >> app.yml
+        #                cat app.yml
 
         -   name: Deploy to App Engine
             if: steps.diff.outputs.diff == 'diff'
             run: gcloud app deploy
+
+        -   name: Set GCP Environment Variables
+            run: |
+                gcloud app services set-env-vars default --env-vars BASIC_AUTH_USERNAME='${{ secrets.BASIC_AUTH_USERNAME }}',BASIC_AUTH_PASSWORD='${{ secrets.BASIC_AUTH_PASSWORD }}'
