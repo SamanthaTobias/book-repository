@@ -18,7 +18,6 @@ public class BasicAuthConfig {
 //	private String password;
 
 	@Bean
-//    @DependsOn({"localConfig", "cloudConfig"})
 	public BasicAuthInterceptor basicAuthInterceptor() {
 		return new BasicAuthInterceptor(
 				basicAuthProperties.getUsername(),

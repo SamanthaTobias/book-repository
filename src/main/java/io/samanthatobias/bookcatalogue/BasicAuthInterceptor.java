@@ -25,7 +25,7 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 			if (authHeaderParts.length == 2 && "Basic".equals(authHeaderParts[0])) {
 				String decodedAuthHeader = new String(Base64.getDecoder().decode(authHeaderParts[1]));
 				String[] credentials = decodedAuthHeader.split(":");
-				if (credentials.length == 2 && adminName.equals(credentials[0]) && adminPassword.equals(credentials[1])) {
+				if (adminCredentials(credentials)) {
 					return true;
 				}
 			}
@@ -34,6 +34,14 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setHeader("WWW-Authenticate", "Basic realm=\"Access to the staging site\", charset=\"UTF-8\"");
 		return false;
+	}
+
+	private boolean adminCredentials(String[] credentials) {
+		return credentials.length == 2
+				&& adminName != null
+				&& adminName.equals(credentials[0])
+				&& adminPassword != null
+				&& adminPassword.equals(credentials[1]);
 	}
 
 }
