@@ -65,8 +65,8 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 			}
 		} else {
 			System.out.println("Missing credential data");
-			System.getenv("BASIC_AUTH_USERNAME");
-			System.getenv("BASIC_AUTH_PASSWORD");
+			System.out.printf("BASIC_AUTH_USERNAME:%s", System.getenv("BASIC_AUTH_USERNAME"));
+			System.out.printf("BASIC_AUTH_PASSWORD:%s", System.getenv("BASIC_AUTH_PASSWORD"));
 		}
 		System.out.println("Credentials correct: " + correct);
 		return correct;
