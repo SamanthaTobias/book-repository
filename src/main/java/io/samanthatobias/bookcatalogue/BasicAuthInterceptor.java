@@ -52,6 +52,7 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 	private boolean matchAdminCredentials(String[] credentials) {
 		boolean correct = false;
 		System.out.println("checking credentials");
+		System.out.printf("name=\"%s\", phrase=\"%s\"", adminName, adminPassword);
 		if (credentials.length == 2 && adminName != null && adminPassword != null) {
 			if (adminName.equals(credentials[0]) && adminPassword.equals(credentials[1])) {
 				correct = true;
