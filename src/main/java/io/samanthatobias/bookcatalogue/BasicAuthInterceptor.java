@@ -1,26 +1,26 @@
 package io.samanthatobias.bookcatalogue;
 
+import java.util.Arrays;
 import java.util.Base64;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 public class BasicAuthInterceptor implements HandlerInterceptor {
 
-	private final String adminName;
-	private final String adminPassword;
-
 	@Autowired
-	private Environment env;
+	Environment environment;
 
-	public BasicAuthInterceptor(String adminName, String adminPassword) {
-		this.adminName = adminName;
-		this.adminPassword = adminPassword;
-	}
+	@Value("${BASIC_AUTH_USERNAME:#{null}}")
+	private String adminName;
+
+	@Value("${BASIC_AUTH_PASSWORD:#{null}}")
+	private String adminPassword;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
@@ -30,7 +30,7 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 			if (authHeaderParts.length == 2 && "Basic".equals(authHeaderParts[0])) {
 				String decodedAuthHeader = new String(Base64.getDecoder().decode(authHeaderParts[1]));
 				String[] credentials = decodedAuthHeader.split(":");
-				if (adminCredentials(credentials)) {
+				if (isLocalEnvironment() || matchAdminCredentials(credentials)) {
 					return true;
 				}
 			}
@@ -41,7 +41,15 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 		return false;
 	}
 
-	private boolean adminCredentials(String[] credentials) {
+	private boolean isLocalEnvironment() {
+		boolean local = Arrays.stream(environment.getActiveProfiles()).anyMatch(p -> p.equalsIgnoreCase("local"));
+		if (local) {
+			System.out.println("User is local.");
+		}
+		return local;
+	}
+
+	private boolean matchAdminCredentials(String[] credentials) {
 		boolean correct = false;
 		System.out.println("checking credentials");
 		if (credentials.length == 2 && adminName != null && adminPassword != null) {

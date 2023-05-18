@@ -1,4 +1,0 @@
-# rename to auth-local.properties
-basic.auth.username=ReplaceWithUsername
-basic.auth.password=ReplaceWithPassword
-auth.enabled=true

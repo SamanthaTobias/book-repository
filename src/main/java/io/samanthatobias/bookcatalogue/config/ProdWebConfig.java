@@ -2,6 +2,7 @@ package io.samanthatobias.bookcatalogue.config;
 
 import io.samanthatobias.bookcatalogue.BasicAuthInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -15,6 +16,11 @@ public class ProdWebConfig implements WebMvcConfigurer {
 
 	public ProdWebConfig(@Lazy BasicAuthInterceptor basicAuthInterceptor) {
 		this.basicAuthInterceptor = basicAuthInterceptor;
+	}
+
+	@Bean
+	public BasicAuthInterceptor basicAuthInterceptor() {
+		return new BasicAuthInterceptor();
 	}
 
 	@Override
