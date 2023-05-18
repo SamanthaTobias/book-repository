@@ -5,12 +5,17 @@ import java.util.Base64;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 public class BasicAuthInterceptor implements HandlerInterceptor {
 
 	private final String adminName;
 	private final String adminPassword;
+
+	@Autowired
+	private Environment env;
 
 	public BasicAuthInterceptor(String adminName, String adminPassword) {
 		this.adminName = adminName;
@@ -37,11 +42,23 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 	}
 
 	private boolean adminCredentials(String[] credentials) {
-		return credentials.length == 2
-				&& adminName != null
-				&& adminName.equals(credentials[0])
-				&& adminPassword != null
-				&& adminPassword.equals(credentials[1]);
+		boolean correct = false;
+		System.out.println("checking credentials");
+		if (credentials.length == 2 && adminName != null && adminPassword != null) {
+			if (adminName.equals(credentials[0]) && adminPassword.equals(credentials[1])) {
+				correct = true;
+			} else {
+				System.out.printf("""
+								Credentials incorrect.
+								Is: "%s:%s"
+								Should be: "%s:%s"%n""",
+						credentials[0], credentials[1], adminName, adminPassword);
+			}
+		} else {
+			System.out.println("Missing credential data");
+		}
+		System.out.println("Credentials correct: " + correct);
+		return correct;
 	}
 
 }

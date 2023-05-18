@@ -50,7 +50,6 @@ jobs:
 
         -   name: Prepare app.yml
             run: |
-                echo "env_variables:" >> app.yml
                 echo "  BASIC_AUTH_USERNAME: '${{ secrets.BASIC_AUTH_USERNAME }}'" >> app.yml
                 echo "  BASIC_AUTH_PASSWORD: '${{ secrets.BASIC_AUTH_PASSWORD }}'" >> app.yml
                 echo "  MAVEN_OPTS: '-Dgit.skip=true'" >> app.yml
