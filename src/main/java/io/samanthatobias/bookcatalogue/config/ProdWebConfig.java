@@ -1,6 +1,7 @@
 package io.samanthatobias.bookcatalogue.config;
 
 import io.samanthatobias.bookcatalogue.BasicAuthInterceptor;
+import io.samanthatobias.bookcatalogue.service.GoogleSecretService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -19,13 +20,16 @@ public class ProdWebConfig implements WebMvcConfigurer {
 	@Autowired
 	Environment environment;
 
+	@Autowired
+	GoogleSecretService googleSecretService;
+
 	public ProdWebConfig(@Lazy BasicAuthInterceptor basicAuthInterceptor) {
 		this.basicAuthInterceptor = basicAuthInterceptor;
 	}
 
 	@Bean
 	public BasicAuthInterceptor basicAuthInterceptor() {
-		return new BasicAuthInterceptor(environment);
+		return new BasicAuthInterceptor(environment, googleSecretService);
 	}
 
 	@Override

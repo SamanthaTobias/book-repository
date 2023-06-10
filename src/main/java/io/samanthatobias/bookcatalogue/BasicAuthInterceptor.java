@@ -7,21 +7,19 @@ import io.samanthatobias.bookcatalogue.service.GoogleSecretService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 public class BasicAuthInterceptor implements HandlerInterceptor {
 
 	private final Environment environment;
+	private final GoogleSecretService googleSecretService;
 	private final String adminName;
 	private final String adminPassword;
 
-	@Autowired
-	private GoogleSecretService googleSecretService;
-
-	public BasicAuthInterceptor(Environment environment) {
+	public BasicAuthInterceptor(Environment environment, GoogleSecretService googleSecretService) {
 		this.environment = environment;
+		this.googleSecretService = googleSecretService;
 		if (isCloudEnvironment()) {
 			System.out.println("Cloud profile, getting username and password from Google Secret Service.");
 			adminName = googleSecretService.getAdminUsername();
