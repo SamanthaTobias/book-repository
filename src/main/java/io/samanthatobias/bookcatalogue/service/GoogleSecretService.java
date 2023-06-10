@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GoogleSecretService {
 
-	@Value("${google.cloud.platform.project.id}")
+	@Value("${google.cloud.platform.project.id:#{null}}")
 	private String PROJECT_ID;
 
 	public String getAdminUsername() {
