@@ -3,34 +3,49 @@ package io.samanthatobias.bookcatalogue;
 import java.util.Arrays;
 import java.util.Base64;
 
+import io.samanthatobias.bookcatalogue.service.GoogleSecretService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 public class BasicAuthInterceptor implements HandlerInterceptor {
 
+	private final Environment environment;
+	private final String adminName;
+	private final String adminPassword;
+
 	@Autowired
-	Environment environment;
+	private GoogleSecretService googleSecretService;
 
-	@Value("${BASIC_AUTH_USERNAME:#{null}}")
-	private String adminName;
-
-	@Value("${BASIC_AUTH_PASSWORD:#{null}}")
-	private String adminPassword;
+	public BasicAuthInterceptor(Environment environment) {
+		this.environment = environment;
+		if (isCloudEnvironment()) {
+			System.out.println("Cloud profile, getting username and password from Google Secret Service.");
+			adminName = googleSecretService.getAdminUsername();
+			adminPassword = googleSecretService.getAdminPassword();
+		} else {
+			System.out.println("No cloud profile, setting username and password to null.");
+			adminName = null;
+			adminPassword = null;
+		}
+	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
+	public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
+		if (isLocalEnvironment()) {
+			System.out.println("User is local, skipping authentication step.");
+			return true;
+		}
 		String authHeader = request.getHeader("Authorization");
 		if (authHeader != null) {
 			String[] authHeaderParts = authHeader.split(" ");
 			if (authHeaderParts.length == 2 && "Basic".equals(authHeaderParts[0])) {
 				String decodedAuthHeader = new String(Base64.getDecoder().decode(authHeaderParts[1]));
 				String[] credentials = decodedAuthHeader.split(":");
-				if (isLocalEnvironment() || matchAdminCredentials(credentials)) {
+				if (matchAdminCredentials(credentials)) {
 					return true;
 				}
 			}
@@ -42,11 +57,11 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 	}
 
 	private boolean isLocalEnvironment() {
-		boolean local = Arrays.stream(environment.getActiveProfiles()).anyMatch(p -> p.equalsIgnoreCase("local"));
-		if (local) {
-			System.out.println("User is local.");
-		}
-		return local;
+		return Arrays.stream(environment.getActiveProfiles()).anyMatch(p -> p.equalsIgnoreCase("local"));
+	}
+
+	private boolean isCloudEnvironment() {
+		return Arrays.stream(environment.getActiveProfiles()).anyMatch(p -> p.equalsIgnoreCase("cloud"));
 	}
 
 	private boolean matchAdminCredentials(String[] credentials) {

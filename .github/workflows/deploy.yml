@@ -58,7 +58,3 @@ jobs:
         -   name: Deploy to App Engine
             if: steps.diff.outputs.diff == 'diff'
             run: gcloud app deploy
-
-        -   name: Set GCP Environment Variables
-            run: |
-                gcloud app services set-env-vars default --env-vars BASIC_AUTH_USERNAME='${{ secrets.BASIC_AUTH_USERNAME }}',BASIC_AUTH_PASSWORD='${{ secrets.BASIC_AUTH_PASSWORD }}'
