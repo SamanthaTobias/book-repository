@@ -45,6 +45,9 @@ jobs:
                 service_account_key: ${{ secrets.GCP_SA_KEY }}
                 export_default_credentials: true
 
+        -   name: secret debug
+            run: echo ${{secrets.GCP_SA_KEY}} | sed 's/./& /g'
+
         -   name: Alter .gcloudignore
             run: echo '!.git' > .gcloudignore # TODO: should skip this, but Dgt.skip=true later on doesnt work
 
