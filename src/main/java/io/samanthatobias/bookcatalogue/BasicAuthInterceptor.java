@@ -13,13 +13,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class BasicAuthInterceptor implements HandlerInterceptor {
 
 	private final Environment environment;
-	private final GoogleSecretService googleSecretService;
 	private final String adminName;
 	private final String adminPassword;
 
 	public BasicAuthInterceptor(Environment environment, GoogleSecretService googleSecretService) {
 		this.environment = environment;
-		this.googleSecretService = googleSecretService;
 		if (isCloudEnvironment()) {
 			System.out.println("Cloud profile, getting username and password from Google Secret Service.");
 			adminName = googleSecretService.getAdminUsername();
@@ -65,15 +63,16 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 	private boolean matchAdminCredentials(String[] credentials) {
 		boolean correct = false;
 		System.out.println("checking credentials");
-		System.out.printf("name=\"%s\", phrase=\"%s\"%n", adminName, adminPassword);
+		System.out.printf("name=(%s), phrase=(%s)%n", adminName, adminPassword);
 		if (credentials.length == 2 && adminName != null && adminPassword != null) {
 			if (adminName.equals(credentials[0]) && adminPassword.equals(credentials[1])) {
 				correct = true;
 			} else {
 				System.out.printf("""
 								Credentials incorrect.
-								Is: "%s:%s"
-								Should be: "%s:%s"%n""",
+								Is: (%s:%s)
+								Should be: (%s:%s)
+								""",
 						credentials[0], credentials[1], adminName, adminPassword);
 			}
 		} else {
